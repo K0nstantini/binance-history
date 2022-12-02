@@ -1,0 +1,16 @@
+[package]
+name = "binance-data"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+chrono = "0.4.23"
+csv = "1.1.6"
+rust_decimal = "1.26.1"
+reqwest = "0.11.13"
+serde = { version = "1.0.148", features = ["derive"] }
+thiserror = "1.0.37"
+tokio = { version = "1.22.0", features = ["full"] }
+zip = "0.6.3"
