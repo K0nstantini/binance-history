@@ -29,12 +29,13 @@ pub async fn get_from_csv(symbol: &str, path: &str, from: &str, to: &str) -> Res
     let mut result = Vec::new();
 
     for file in &files {
-        let mut reader = csv::ReaderBuilder::new()
-            .has_headers(true)
-            .from_path(&file.csv)?;
+        let mut reader = csv::ReaderBuilder::new().from_path(&file.csv)?;
+        let mut raw_record = csv::StringRecord::new();
+        let headers = headers();
 
-        for record in reader.deserialize() {
-            match record? {
+        while reader.read_record(&mut raw_record)? {
+            let record = raw_record.deserialize(Some(&headers))?;
+            match record {
                 RawDataHistory { time, .. } if time < from_milli => continue,
                 RawDataHistory { time, .. } if time > to_milli => break,
                 r => result.push(r)
@@ -42,4 +43,8 @@ pub async fn get_from_csv(symbol: &str, path: &str, from: &str, to: &str) -> Res
         }
     }
     Ok(result)
+}
+
+fn headers() -> csv::StringRecord {
+    csv::StringRecord::from(vec!["id", "price", "qty", "quote_qty", "time", "is_buyer_maker"])
 }
