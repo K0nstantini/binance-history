@@ -1,7 +1,6 @@
 use std::{fs, io};
 use std::fs::File;
-
-use crate::models::FileData;
+use crate::model::FileData;
 
 use super::error::*;
 
