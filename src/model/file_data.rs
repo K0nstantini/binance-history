@@ -1,6 +1,7 @@
 use chrono::{Datelike, DateTime, Utc};
 use crate::MarketType;
 
+#[derive(Debug)]
 pub struct FileData {
     pub csv: String,
     pub zip: String,

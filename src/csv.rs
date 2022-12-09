@@ -23,6 +23,7 @@ pub async fn get_from_csv<T: DataHistory>(
         .map(|d: DateTime<Utc>| FileData::new(market, symbol, path, d))
         .collect();
 
+
     for file in &files {
         if !Path::new(&file.csv).exists() {
             download::download_data(file).await?;
@@ -37,7 +38,7 @@ pub async fn get_from_csv<T: DataHistory>(
     for file in &files {
         let mut reader = csv::ReaderBuilder::new().from_path(&file.csv)?;
         let mut raw_record = csv::StringRecord::new();
-        let headers = headers();
+        let headers = market.headers();
 
         while reader.read_record(&mut raw_record)? {
             let record = raw_record.deserialize::<T>(Some(&headers))?;
@@ -49,8 +50,4 @@ pub async fn get_from_csv<T: DataHistory>(
         }
     }
     Ok(result)
-}
-
-fn headers() -> csv::StringRecord {
-    csv::StringRecord::from(vec!["id", "price", "qty", "quote_qty", "time", "is_buyer_maker"])
 }
