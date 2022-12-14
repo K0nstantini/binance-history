@@ -1,6 +1,8 @@
 use std::fmt;
+
 use serde::{de, Deserialize, Deserializer};
 use serde::de::Visitor;
+
 use crate::Side;
 
 impl<'de> Deserialize<'de> for Side {

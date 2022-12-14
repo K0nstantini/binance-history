@@ -2,25 +2,19 @@ use std::path::Path;
 
 use chrono::{DateTime, TimeZone, Utc};
 
+use crate::{Config, download};
 use crate::date::DateRange;
-use crate::download;
-use crate::model::{FileData, MarketType, DataHistory};
+use crate::model::{DataHistory, FileData};
 
 use super::error::*;
 
-pub async fn get_from_csv<T: DataHistory>(
-    market: MarketType,
-    symbol: &str,
-    path: &str,
-    from: &str,
-    to: &str,
-) -> Result<Vec<T>> {
+pub async fn get_from_csv<T: DataHistory>(config: &Config, symbol: &str, from: &str, to: &str,) -> Result<Vec<T>> {
     let date_time = |str| Utc.datetime_from_str(str, "%Y-%m-%d %H:%M:%S");
     let (from, to) = (date_time(from)?, date_time(to)?);
 
     let files: Vec<FileData> = DateRange(from, to)
         .into_iter()
-        .map(|d: DateTime<Utc>| FileData::new(market, symbol, path, d))
+        .map(|d: DateTime<Utc>| FileData::new(config, symbol, d))
         .collect();
 
 
@@ -38,7 +32,7 @@ pub async fn get_from_csv<T: DataHistory>(
     for file in &files {
         let mut reader = csv::ReaderBuilder::new().from_path(&file.csv)?;
         let mut raw_record = csv::StringRecord::new();
-        let headers = market.headers();
+        let headers = config.headers();
 
         while reader.read_record(&mut raw_record)? {
             let record = raw_record.deserialize::<T>(Some(&headers))?;
