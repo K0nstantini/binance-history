@@ -18,4 +18,7 @@ pub enum Error {
 
     #[error(transparent)]
     Csv(#[from] csv::Error),
+
+    #[error("Missed kline's interval")]
+    MissedKlinesInterval,
 }

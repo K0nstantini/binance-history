@@ -1,4 +1,6 @@
-use crate::{DataInterval, DataType, MarketType};
+use crate::{DataInterval, DataType, InternalDataType, MarketType};
+use crate::data_type::InternalDataType;
+use crate::model::market_type::MarketType;
 
 const URL: &str = "https://data.binance.vision/data";
 
@@ -6,7 +8,7 @@ const URL: &str = "https://data.binance.vision/data";
 pub struct Config {
     pub market_type: MarketType,
     pub interval: DataInterval,
-    pub data_type: DataType,
+    pub data_type: InternalDataType,
     pub path: String,
 }
 
@@ -24,7 +26,7 @@ impl Config {
     pub(crate) fn headers(&self) -> csv::StringRecord {
         let headers = match self.market_type {
             MarketType::SPOT => match self.data_type {
-                DataType::AggTrades => vec![
+                InternalDataType::AggTrades => vec![
                     "id",
                     "price",
                     "size",
@@ -33,7 +35,7 @@ impl Config {
                     "buyer_maker",
                     "best_match",
                 ],
-                DataType::Kines(_) => vec![
+                InternalDataType::Kines(_) => vec![
                     "open_time",
                     "open",
                     "high",
@@ -47,7 +49,7 @@ impl Config {
                     "taker_buy_quote_asset_volume",
                     "ignore",
                 ],
-                DataType::Trades => vec![
+                InternalDataType::Trades => vec![
                     "id",
                     "price",
                     "size",
@@ -58,7 +60,7 @@ impl Config {
                 ]
             }
             MarketType::USDM => match self.data_type {
-                DataType::AggTrades => vec![
+                InternalDataType::AggTrades => vec![
                     "id",
                     "price",
                     "size",
@@ -67,7 +69,7 @@ impl Config {
                     "time",
                     "buyer_maker",
                 ],
-                DataType::Kines(_) => vec![
+                InternalDataType::Kines(_) => vec![
                     "open_time",
                     "open",
                     "high",
@@ -81,7 +83,7 @@ impl Config {
                     "taker_buy_quote_asset_volume",
                     "ignore",
                 ],
-                DataType::Trades => vec![
+                InternalDataType::Trades => vec![
                     "id",
                     "price",
                     "size",
@@ -91,7 +93,7 @@ impl Config {
                 ]
             },
             MarketType::COINM => match self.data_type {
-                DataType::AggTrades => vec![
+                InternalDataType::AggTrades => vec![
                     "id",
                     "price",
                     "size",
@@ -100,7 +102,7 @@ impl Config {
                     "time",
                     "buyer_maker",
                 ],
-                DataType::Kines(_) => vec![
+                InternalDataType::Kines(_) => vec![
                     "open_time",
                     "open",
                     "high",
@@ -114,7 +116,7 @@ impl Config {
                     "taker_buy_base_asset_volume",
                     "ignore",
                 ],
-                DataType::Trades => vec![
+                InternalDataType::Trades => vec![
                     "id",
                     "price",
                     "size",
