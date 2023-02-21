@@ -1,73 +1,110 @@
-use crate::{COINMTrades, Config, DataHistory, DataInterval, DataType, MarketType, PricesTrades, SpotTrades, USDMTrades};
-use crate::data::{COINMTrades, DataHistory, SpotTrades, USDMTrades};
-use crate::data_type::DataType;
-use crate::error::Result;
+use std::fmt::Debug;
 
-#[allow(dead_code)]
-async fn get_default<T: DataHistory>(config: &Config) -> Result<Vec<T>> {
-    use crate::csv;
+use crate::csv;
+use crate::data::{BinanceData, COINMAggTrades, COINMKlines, COINMTrades, SpotAggTrades, SpotKlines, SpotTrades, USDMAggTrades, USDMKlines, USDMTrades};
 
-    csv::get_from_csv::<T>(
-        &config,
+fn symbols() -> Vec<&'static str> {
+    vec![
+        "ADAUSDT",
         "DOGEUSDT",
-        "2022-08-01 00:00:00",
-        "2022-08-01 23:59:59",
-    ).await
+        "NEARUSDT",
+    ]
 }
 
-// ====================================== TRADES =======================================================
 
-#[tokio::test]
-async fn trades_usdm_daily_test() {
-    use crate::csv;
+fn coinm_symbols() -> Vec<&'static str> {
+    vec![
+        "BTCUSD_PERP",
+        "ETHUSD_PERP",
+        "XRPUSD_PERP",
+    ]
+}
 
-    let config = Config {
-        market_type: MarketType::USDM,
-        interval: DataInterval::Daily,
-        data_type: DataType::Trades,
-        path: "csv/usdm/trades/".to_string(),
-    };
+fn klines() -> Vec<&'static str> {
+    vec!["1m", "4h", "1d"]
+}
 
-    let data_no_headers: Vec<PricesTrades> = get_default(&config).await.unwrap();
-    assert!(!data_no_headers.is_empty());
+fn dates() -> Vec<(&'static str, &'static str)> {
+    vec![
+        ("2022-03-01 00:00:00", "2022-03-02 23:59:59"),
+        ("2022-10-11 00:00:00", "2022-10-13 18:00:00"),
+        ("2023-01-01 00:00:00", "2023-01-05 23:59:59"),
+    ]
+}
 
-    let data_with_headers: Vec<USDMTrades> = csv::get_from_csv(
-        &config,
-        "DOGEUSDT",
-        "2022-11-19 00:00:00",
-        "2022-11-20 23:59:59",
-    ).await.unwrap();
-    assert!(!data_with_headers.is_empty());
+async fn trades_test<T: BinanceData + Debug>(symbols: &[&str], path: &str) {
+    for symbol in symbols {
+        for (from, to) in dates() {
+            let result: Vec<T> = csv::get(symbol, None, from, to, path)
+                .await
+                .unwrap();
+
+            assert!(!result.is_empty())
+        }
+    }
+}
+
+async fn klines_test<T: BinanceData + Debug>(symbols: &[&str], path: &str) {
+    for symbol in symbols {
+        for (from, to) in dates() {
+            for kline in klines() {
+                let result: Vec<T> = csv::get(symbol, Some(kline), from, to, path)
+                    .await
+                    .unwrap();
+
+                assert!(!result.is_empty())
+            }
+        }
+    }
 }
 
 #[tokio::test]
-async fn trades_coinm_daily_test() {
-    let config = Config {
-        market_type: MarketType::COINM,
-        interval: DataInterval::Daily,
-        data_type: DataType::Trades,
-        path: "csv/coinm/trades/".to_string(),
-    };
-
-    let data: Vec<PricesTrades> = get_default(&config).await.unwrap();
-    assert!(!data.is_empty());
-
-    let data: Vec<COINMTrades> = get_default(&config).await.unwrap();
-    assert!(!data.is_empty());
+#[ignore]
+async fn spot_trades_test() {
+    trades_test::<SpotTrades>(&symbols(), "csv/spot/trades/").await;
 }
 
 #[tokio::test]
-async fn trades_spot_daily_test() {
-    let config = Config {
-        market_type: MarketType::SPOT,
-        interval: DataInterval::Daily,
-        data_type: DataType::Trades,
-        path: "csv/spot/trades/".to_string(),
-    };
+#[ignore]
+async fn spot_agg_trades_test() {
+    trades_test::<SpotAggTrades>(&symbols(), "csv/spot/agg_trades/").await;
+}
 
-    let data: Vec<PricesTrades> = get_default(&config).await.unwrap();
-    assert!(!data.is_empty());
+#[tokio::test]
+#[ignore]
+async fn spot_kline_test() {
+    klines_test::<SpotKlines>(&symbols(), "csv/spot/klines/").await;
+}
 
-    let data: Vec<SpotTrades> = get_default(&config).await.unwrap();
-    assert!(!data.is_empty());
+#[tokio::test]
+#[ignore]
+async fn usdm_trades_test() {
+    trades_test::<USDMTrades>(&symbols(), "csv/usdm/trades/").await;
+}
+
+#[tokio::test]
+#[ignore]
+async fn usdm_agg_trades_test() {
+    trades_test::<USDMAggTrades>(&symbols(), "csv/usdm/agg_trades/").await;
+}
+
+#[tokio::test]
+#[ignore]
+async fn usdm_kline_test() {
+    klines_test::<USDMKlines>(&symbols(), "csv/usdm/klines/").await;
+}
+
+#[tokio::test]
+async fn coinm_trades_test() {
+    trades_test::<COINMTrades>(&coinm_symbols(), "csv/coinm/trades/").await;
+}
+
+#[tokio::test]
+async fn coinm_agg_trades_test() {
+    trades_test::<COINMAggTrades>(&coinm_symbols(), "csv/coinm/agg_trades/").await;
+}
+
+#[tokio::test]
+async fn coinm_kline_test() {
+    klines_test::<COINMKlines>(&coinm_symbols(), "csv/coinm/klines/").await;
 }

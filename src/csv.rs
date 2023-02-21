@@ -2,14 +2,13 @@ use std::path::Path;
 
 use chrono::{DateTime, TimeZone, Utc};
 
-use crate::{Config, DataInterval, DataType, download, MarketType};
+use crate::{Config, DataInterval, download};
+use crate::data::BinanceData;
+use crate::error::Result;
+use crate::model::FileData;
 use crate::util::date_range::DateRange;
-use crate::model::{DataHistory, FileData};
-use crate::data::DataHistory;
 
-use super::error::*;
-
-pub async fn get<T: DataHistory>(
+pub async fn get<T: BinanceData>(
     symbol: &str,
     interval: Option<&str>,
     from: &str,
@@ -23,10 +22,10 @@ pub async fn get<T: DataHistory>(
         path: path.to_string(),
     };
 
-    get_from_csv(&config, symbol, from, to)
+    get_from_csv(&config, symbol, from, to).await
 }
 
-async fn get_from_csv<T: DataHistory>(config: &Config, symbol: &str, from: &str, to: &str) -> Result<Vec<T>> {
+async fn get_from_csv<T: BinanceData>(config: &Config, symbol: &str, from: &str, to: &str) -> Result<Vec<T>> {
     let date_time = |str| Utc.datetime_from_str(str, "%Y-%m-%d %H:%M:%S");
     let (from, to) = (date_time(from)?, date_time(to)?);
 
@@ -46,13 +45,23 @@ async fn get_from_csv<T: DataHistory>(config: &Config, symbol: &str, from: &str,
 
     let mut result = Vec::new();
 
+
     for file in &files {
-        let mut reader = csv::ReaderBuilder::new().from_path(&file.csv)?;
+        let mut reader = csv::ReaderBuilder::new()
+            .has_headers(false)
+            .from_path(&file.csv)?;
         let mut raw_record = csv::StringRecord::new();
         let headers = config.headers();
 
+        let mut maybe_header = true;
         while reader.read_record(&mut raw_record)? {
-            let record = raw_record.deserialize::<T>(Some(&headers))?;
+            let record = match raw_record.deserialize::<T>(Some(&headers)) {
+                Ok(r) => Ok(r),
+                Err(e) => if maybe_header {
+                    maybe_header = false;
+                    continue;
+                } else { Err(e) }
+            }?;
             match record.time() {
                 t if t < from_milli => continue,
                 t if t > to_milli => break,

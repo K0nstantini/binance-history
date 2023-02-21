@@ -6,11 +6,10 @@ use chrono::{
 use rust_decimal::Decimal;
 use serde::{de::DeserializeOwned, Deserialize};
 
-use crate::{DataHistory, DataType, InternalDataType, MarketType};
 use crate::data_type::DataType;
-use crate::deserialize_bool;
+use crate::{deserialize_bool, MarketType};
 
-pub trait DataHistory: DeserializeOwned {
+pub trait BinanceData: DeserializeOwned {
     fn types() -> (MarketType, DataType);
     fn time(&self) -> i64;
 }
@@ -19,7 +18,8 @@ pub trait DataHistory: DeserializeOwned {
 
 #[derive(Clone, Debug, Deserialize)]
 pub struct SpotTrades {
-    pub time: i64,
+    #[serde(with = "ts_milliseconds")]
+    pub time: DateTime<Utc>,
     pub price: Decimal,
     pub size: Decimal,
     pub volume: Decimal,
@@ -29,12 +29,12 @@ pub struct SpotTrades {
     pub best_match: bool,
 }
 
-impl DataHistory for SpotTrades {
+impl BinanceData for SpotTrades {
     fn types() -> (MarketType, DataType) {
         (MarketType::SPOT, DataType::Trades)
     }
     fn time(&self) -> i64 {
-        self.time
+        self.time.timestamp_millis()
     }
 }
 
@@ -48,10 +48,11 @@ pub struct SpotAggTrades {
     pub last_trade_id: u64,
     #[serde(deserialize_with = "deserialize_bool")]
     pub buyer_maker: bool,
-    pub best_match: Decimal,
+    #[serde(deserialize_with = "deserialize_bool")]
+    pub best_match: bool,
 }
 
-impl DataHistory for SpotAggTrades {
+impl BinanceData for SpotAggTrades {
     fn types() -> (MarketType, DataType) {
         (MarketType::SPOT, DataType::AggTrades)
     }
@@ -77,7 +78,7 @@ pub struct SpotKlines {
     pub taker_buy_quote_asset_volume: Decimal,
 }
 
-impl DataHistory for SpotKlines {
+impl BinanceData for SpotKlines {
     fn types() -> (MarketType, DataType) {
         (MarketType::SPOT, DataType::Kines)
     }
@@ -99,7 +100,7 @@ pub struct USDMTrades {
     pub buyer_maker: bool,
 }
 
-impl DataHistory for USDMTrades {
+impl BinanceData for USDMTrades {
     fn types() -> (MarketType, DataType) {
         (MarketType::USDM, DataType::Trades)
     }
@@ -120,7 +121,7 @@ pub struct USDMAggTrades {
     pub buyer_maker: bool,
 }
 
-impl DataHistory for USDMAggTrades {
+impl BinanceData for USDMAggTrades {
     fn types() -> (MarketType, DataType) {
         (MarketType::USDM, DataType::AggTrades)
     }
@@ -146,7 +147,7 @@ pub struct USDMKlines {
     pub taker_buy_quote_asset_volume: Decimal,
 }
 
-impl DataHistory for USDMKlines {
+impl BinanceData for USDMKlines {
     fn types() -> (MarketType, DataType) {
         (MarketType::USDM, DataType::Kines)
     }
@@ -168,7 +169,7 @@ pub struct COINMTrades {
     pub buyer_maker: bool,
 }
 
-impl DataHistory for COINMTrades {
+impl BinanceData for COINMTrades {
     fn types() -> (MarketType, DataType) {
         (MarketType::COINM, DataType::Trades)
     }
@@ -189,7 +190,7 @@ pub struct COINMAggTrades {
     pub buyer_maker: bool,
 }
 
-impl DataHistory for COINMAggTrades {
+impl BinanceData for COINMAggTrades {
     fn types() -> (MarketType, DataType) {
         (MarketType::COINM, DataType::AggTrades)
     }
@@ -215,7 +216,7 @@ pub struct COINMKlines {
     pub taker_buy_base_asset_volume: Decimal,
 }
 
-impl DataHistory for COINMKlines {
+impl BinanceData for COINMKlines {
     fn types() -> (MarketType, DataType) {
         (MarketType::COINM, DataType::Kines)
     }

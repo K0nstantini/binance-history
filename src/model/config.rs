@@ -1,6 +1,5 @@
-use crate::{DataInterval, DataType, InternalDataType, MarketType};
 use crate::data_type::InternalDataType;
-use crate::model::market_type::MarketType;
+use crate::{DataInterval, MarketType};
 
 const URL: &str = "https://data.binance.vision/data";
 
@@ -32,6 +31,7 @@ impl Config {
                     "size",
                     "first_trade_id",
                     "last_trade_id",
+                    "time",
                     "buyer_maker",
                     "best_match",
                 ],
