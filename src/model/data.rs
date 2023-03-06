@@ -6,8 +6,9 @@ use chrono::{
 use rust_decimal::Decimal;
 use serde::{de::DeserializeOwned, Deserialize};
 
-use crate::data_type::DataType;
-use crate::{deserialize_bool, MarketType};
+use crate::model::data_type::DataType;
+use crate::model::MarketType;
+use crate::util::deserialize::deserialize_bool;
 
 pub trait BinanceData: DeserializeOwned {
     fn types() -> (MarketType, DataType);

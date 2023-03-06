@@ -1,5 +1,5 @@
 pub use crate::csv::get;
-pub use crate::model::*;
+pub use crate::model::data::*;
 
 mod download;
 mod csv;

@@ -32,7 +32,7 @@ pub enum InternalDataType {
 }
 
 impl InternalDataType {
-    pub(crate) fn path(&self, symbol: &str) -> String {
+    pub fn path(&self, symbol: &str) -> String {
         match self {
             InternalDataType::AggTrades => format!("aggTrades/{symbol}"),
             InternalDataType::Kines(i) => format!("klines/{symbol}/{i}"),
@@ -40,7 +40,7 @@ impl InternalDataType {
         }
     }
 
-    pub(crate) fn file_name(&self, symbol: &str, date: DateTime<Utc>) -> String {
+    pub fn file_name(&self, symbol: &str, date: DateTime<Utc>) -> String {
         let (y, m, d) = (date.year(), date.month(), date.day());
         match self {
             InternalDataType::AggTrades => format!("{symbol}-aggTrades-{y}-{m:02}-{d:02}"),

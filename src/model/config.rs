@@ -1,5 +1,5 @@
-use crate::data_type::InternalDataType;
-use crate::{DataInterval, MarketType};
+use crate::model::{DataInterval, MarketType};
+use crate::model::data_type::InternalDataType;
 
 const URL: &str = "https://data.binance.vision/data";
 
@@ -12,7 +12,7 @@ pub struct Config {
 }
 
 impl Config {
-    pub(crate) fn path(&self, symbol: &str) -> String {
+    pub fn path(&self, symbol: &str) -> String {
         format!(
             "{}/{}/{}/{}",
             URL,
@@ -22,7 +22,7 @@ impl Config {
         )
     }
 
-    pub(crate) fn headers(&self) -> csv::StringRecord {
+    pub fn headers(&self) -> csv::StringRecord {
         let headers = match self.market_type {
             MarketType::SPOT => match self.data_type {
                 InternalDataType::AggTrades => vec![

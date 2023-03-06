@@ -1,6 +1,6 @@
 use chrono::{DateTime, Utc};
 
-use crate::Config;
+use crate::model::Config;
 
 #[derive(Debug)]
 pub struct FileData {

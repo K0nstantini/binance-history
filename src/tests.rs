@@ -1,7 +1,7 @@
 use std::fmt::Debug;
 
 use crate::csv;
-use crate::data::{BinanceData, COINMAggTrades, COINMKlines, COINMTrades, SpotAggTrades, SpotKlines, SpotTrades, USDMAggTrades, USDMKlines, USDMTrades};
+use crate::model::data::{BinanceData, COINMAggTrades, COINMKlines, COINMTrades, SpotAggTrades, SpotKlines, SpotTrades, USDMAggTrades, USDMKlines, USDMTrades};
 
 fn symbols() -> Vec<&'static str> {
     vec![

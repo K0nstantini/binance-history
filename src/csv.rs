@@ -1,11 +1,10 @@
 use std::path::Path;
 
 use chrono::{DateTime, TimeZone, Utc};
+use crate::{BinanceData, download};
 
-use crate::{Config, DataInterval, download};
-use crate::data::BinanceData;
 use crate::error::Result;
-use crate::model::FileData;
+use crate::model::{Config, DataInterval, FileData};
 use crate::util::date_range::DateRange;
 
 pub async fn get<T: BinanceData>(
