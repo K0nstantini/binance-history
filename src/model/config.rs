@@ -1,3 +1,5 @@
+use crate::{BinanceData, util};
+use crate::error::Result;
 use crate::model::{DataInterval, MarketType};
 use crate::model::data_type::InternalDataType;
 
@@ -12,6 +14,22 @@ pub struct Config {
 }
 
 impl Config {
+    pub fn new<T: BinanceData>(path: &str, interval: Option<&str>) -> Result<Self> {
+        let path = match path.ends_with('/') {
+            true => path.to_string(),
+            false => format!("{path}/")
+        };
+        util::check_path(&path)?;
+
+        let config = Config {
+            market_type: T::types().0,
+            interval: DataInterval::Daily,
+            data_type: T::types().1.into_internal(interval)?,
+            path,
+        };
+        Ok(config)
+    }
+
     pub fn path(&self, symbol: &str) -> String {
         format!(
             "{}/{}/{}/{}",

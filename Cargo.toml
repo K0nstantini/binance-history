@@ -1,11 +1,18 @@
 [package]
+authors = ["K0nstantini <k0nstamtinus@gmail.com>"]
+categories = ["api-bindings", "cryptography::cryptocurrencies"]
+description = "Unofficial API Binding for the FTX Exchange."
+keywords = ["exchange", "trading", "crypto", "market", "cryptocurrency", "binance"]
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/K0nstantini/binance-history"
+readme = "README.md"
 name = "binance-history"
 version = "0.1.0"
 edition = "2021"
 
 [dependencies]
 chrono = "0.4.23"
-csv = "1.1.6"
+csv = "1.2.0"
 rust_decimal = "1.28.1"
 reqwest = "0.11.14"
 serde = { version = "1.0.152", features = ["derive"] }

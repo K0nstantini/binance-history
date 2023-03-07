@@ -1,10 +1,10 @@
 use std::path::Path;
 
 use chrono::{DateTime, TimeZone, Utc};
-use crate::{BinanceData, download};
 
-use crate::error::Result;
-use crate::model::{Config, DataInterval, FileData};
+use crate::{BinanceData, download};
+use crate::error::{Error, Result};
+use crate::model::{Config, FileData};
 use crate::util::date_range::DateRange;
 
 pub async fn get<T: BinanceData>(
@@ -14,19 +14,16 @@ pub async fn get<T: BinanceData>(
     to: &str,
     path: &str,
 ) -> Result<Vec<T>> {
-    let config = Config {
-        market_type: T::types().0,
-        interval: DataInterval::Daily,
-        data_type: T::types().1.into_internal(interval)?,
-        path: path.to_string(),
-    };
-
+    let config = Config::new::<T>(path, interval)?;
     get_from_csv(&config, symbol, from, to).await
 }
 
 async fn get_from_csv<T: BinanceData>(config: &Config, symbol: &str, from: &str, to: &str) -> Result<Vec<T>> {
     let date_time = |str| Utc.datetime_from_str(str, "%Y-%m-%d %H:%M:%S");
-    let (from, to) = (date_time(from)?, date_time(to)?);
+    let (from, to) = match (date_time(from), date_time(to)) {
+        (Ok(from), Ok(to)) => (from, to),
+        _ => return Err(Error::InvalidDateFormat)
+    };
 
     let files: Vec<FileData> = DateRange(from, to)
         .into_iter()

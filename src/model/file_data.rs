@@ -15,7 +15,6 @@ impl FileData {
         let csv = format!("{}{}.csv", config.path, name);
         let zip = format!("{}{}.zip", config.path, name);
         let url = format!("{}/{}.zip", config.path(symbol), name);
-        dbg!(&url);
 
         FileData { csv, zip, url }
     }

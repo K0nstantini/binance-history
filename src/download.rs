@@ -1,20 +1,25 @@
 use std::{fs, io};
 use std::fs::File;
+
+use reqwest::StatusCode;
+
+use crate::error::Error::Download;
 use crate::model::FileData;
 
 use super::error::*;
 
-pub(crate) async fn download_data(file: &FileData) -> Result<()> {
+pub async fn download_data(file: &FileData) -> Result<()> {
     download_trades(file).await?;
     extract_file(file)?;
     Ok(())
 }
 
 async fn download_trades(file: &FileData) -> Result<()> {
-    let body = reqwest::get(&file.url)
-        .await?
-        .bytes()
-        .await?;
+    let response = reqwest::get(&file.url).await?;
+    let body = match response.status() {
+        StatusCode::OK => response.bytes().await?,
+        status => return Err(Download(file.url.clone(), status.to_string()))
+    };
 
     let mut out = File::create(&file.zip)?;
     io::copy(&mut body.as_ref(), &mut out)?;
