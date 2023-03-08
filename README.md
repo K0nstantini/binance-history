@@ -16,7 +16,7 @@ binance-history = "0.1.0"
 Or for the latest github version:
 
 ```
-binance-history = { git = "https://github.com/K0nstantini/binance-history", branch = "main" }
+binance-history = { git = "https://github.com/K0nstantini/binance-history" }
 ```
 
 ## Usage
