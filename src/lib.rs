@@ -1,5 +1,5 @@
 pub use crate::csv::get;
-pub use crate::model::data::*;
+pub use crate::model::{data::*, MarketType, DataType};
 
 mod download;
 mod csv;

@@ -1,7 +1,7 @@
 [package]
 authors = ["K0nstantini <k0nstamtinus@gmail.com>"]
 categories = ["api-bindings", "cryptography::cryptocurrencies"]
-description = "Unofficial API Binding for the FTX Exchange."
+description = "Downloading and parsing historical data from the Binance exchange"
 keywords = ["exchange", "trading", "crypto", "market", "cryptocurrency", "binance"]
 license = "MIT OR Apache-2.0"
 repository = "https://github.com/K0nstantini/binance-history"
@@ -12,11 +12,11 @@ edition = "2021"
 
 [dependencies]
 chrono = "0.4.23"
-csv = "1.2.0"
+csv = "1.2.1"
 rust_decimal = "1.28.1"
 reqwest = "0.11.14"
 serde = { version = "1.0.152", features = ["derive"] }
 serde_with = { version = "2.2.0", features = ["chrono"] }
-thiserror = "1.0.38"
-tokio = { version = "1.25.0", features = ["full"] }
+thiserror = "1.0.39"
+tokio = { version = "1.26.0", features = ["full"] }
 zip = "0.6.4"

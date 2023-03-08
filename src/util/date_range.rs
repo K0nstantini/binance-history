@@ -2,7 +2,7 @@ use std::mem;
 
 use chrono::{DateTime, Duration, Utc};
 
-pub(crate) struct DateRange(pub DateTime<Utc>, pub DateTime<Utc>);
+pub struct DateRange(pub DateTime<Utc>, pub DateTime<Utc>);
 
 impl Iterator for DateRange {
     type Item = DateTime<Utc>;

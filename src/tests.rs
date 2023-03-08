@@ -59,37 +59,31 @@ async fn klines_test<T: BinanceData + Debug>(symbols: &[&str], path: &str) {
 }
 
 #[tokio::test]
-#[ignore]
 async fn spot_trades_test() {
     trades_test::<SpotTrades>(&symbols(), "csv/spot/trades/").await;
 }
 
 #[tokio::test]
-#[ignore]
 async fn spot_agg_trades_test() {
     trades_test::<SpotAggTrades>(&symbols(), "csv/spot/agg_trades/").await;
 }
 
 #[tokio::test]
-#[ignore]
 async fn spot_kline_test() {
     klines_test::<SpotKlines>(&symbols(), "csv/spot/klines/").await;
 }
 
 #[tokio::test]
-#[ignore]
 async fn usdm_trades_test() {
     trades_test::<USDMTrades>(&symbols(), "csv/usdm/trades/").await;
 }
 
 #[tokio::test]
-#[ignore]
 async fn usdm_agg_trades_test() {
     trades_test::<USDMAggTrades>(&symbols(), "csv/usdm/agg_trades/").await;
 }
 
 #[tokio::test]
-#[ignore]
 async fn usdm_kline_test() {
     klines_test::<USDMKlines>(&symbols(), "csv/usdm/klines/").await;
 }

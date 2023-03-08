@@ -26,7 +26,6 @@ async fn get_from_csv<T: BinanceData>(config: &Config, symbol: &str, from: &str,
     };
 
     let files: Vec<FileData> = DateRange(from, to)
-        .into_iter()
         .map(|d: DateTime<Utc>| FileData::new(config, symbol, d))
         .collect();
 

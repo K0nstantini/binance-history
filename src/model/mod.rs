@@ -9,3 +9,4 @@ pub use config::*;
 pub use file_data::*;
 pub use market_type::*;
 pub use interval::*;
+pub use data_type::*;
