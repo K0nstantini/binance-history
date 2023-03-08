@@ -2,7 +2,7 @@
 authors = ["K0nstantini <k0nstamtinus@gmail.com>"]
 categories = ["api-bindings", "cryptography::cryptocurrencies"]
 description = "Downloading and parsing historical data from the Binance exchange"
-keywords = ["exchange", "trading", "crypto", "market", "cryptocurrency", "binance"]
+keywords = ["exchange", "trading", "historical-data", "cryptocurrency", "binance"]
 license = "MIT OR Apache-2.0"
 repository = "https://github.com/K0nstantini/binance-history"
 readme = "README.md"
