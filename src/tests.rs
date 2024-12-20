@@ -11,7 +11,6 @@ fn symbols() -> Vec<&'static str> {
     ]
 }
 
-
 fn coinm_symbols() -> Vec<&'static str> {
     vec![
         "BTCUSD_PERP",
@@ -34,73 +33,67 @@ fn dates() -> Vec<(DateTime<Utc>, DateTime<Utc>)> {
     ]
 }
 
-async fn trades_test<T: BinanceData + Debug>(symbols: &[&str], path: &str) {
+fn trades_test<T: BinanceData + Debug>(symbols: &[&str], path: &str) {
     for symbol in symbols {
         for (from, to) in dates() {
-            let result: Vec<T> = csv::get_trades(symbol, from, to, path)
-                .await
-                .unwrap();
-
+            let result: Vec<T> = csv::get_trades(symbol, from, to, path).unwrap();
             assert!(!result.is_empty())
         }
     }
 }
 
-async fn klines_test<T: BinanceData + Debug>(symbols: &[&str], path: &str) {
+fn klines_test<T: BinanceData + Debug>(symbols: &[&str], path: &str) {
     for symbol in symbols {
         for (from, to) in dates() {
             for kline in klines() {
-                let result: Vec<T> = csv::get_klines(symbol, kline, from, to, path)
-                    .await
-                    .unwrap();
-
+                let result: Vec<T> = csv::get_klines(symbol, kline, from, to, path).unwrap();
                 assert!(!result.is_empty())
             }
         }
     }
 }
 
-#[tokio::test]
-async fn spot_trades_test() {
-    trades_test::<SpotTrade>(&symbols(), "csv/spot/trades/").await;
+#[test]
+fn spot_trades_test() {
+    trades_test::<SpotTrade>(&symbols(), "csv/spot/trades/");
 }
 
-#[tokio::test]
-async fn spot_agg_trades_test() {
-    trades_test::<SpotAggTrade>(&symbols(), "csv/spot/agg_trades/").await;
+#[test]
+fn spot_agg_trades_test() {
+    trades_test::<SpotAggTrade>(&symbols(), "csv/spot/agg_trades/");
 }
 
-#[tokio::test]
-async fn spot_kline_test() {
-    klines_test::<SpotKline>(&symbols(), "csv/spot/klines/").await;
+#[test]
+fn spot_kline_test() {
+    klines_test::<SpotKline>(&symbols(), "csv/spot/klines/");
 }
 
-#[tokio::test]
-async fn usdm_trades_test() {
-    trades_test::<USDMTrade>(&symbols(), "csv/usdm/trades/").await;
+#[test]
+fn usdm_trades_test() {
+    trades_test::<USDMTrade>(&symbols(), "csv/usdm/trades/");
 }
 
-#[tokio::test]
-async fn usdm_agg_trades_test() {
-    trades_test::<USDMAggTrade>(&symbols(), "csv/usdm/agg_trades/").await;
+#[test]
+fn usdm_agg_trades_test() {
+    trades_test::<USDMAggTrade>(&symbols(), "csv/usdm/agg_trades/");
 }
 
-#[tokio::test]
-async fn usdm_kline_test() {
-    klines_test::<USDMKline>(&symbols(), "csv/usdm/klines/").await;
+#[test]
+fn usdm_kline_test() {
+    klines_test::<USDMKline>(&symbols(), "csv/usdm/klines/");
 }
 
-#[tokio::test]
-async fn coinm_trades_test() {
-    trades_test::<COINMTrade>(&coinm_symbols(), "csv/coinm/trades/").await;
+#[test]
+fn coinm_trades_test() {
+    trades_test::<COINMTrade>(&coinm_symbols(), "csv/coinm/trades/");
 }
 
-#[tokio::test]
-async fn coinm_agg_trades_test() {
-    trades_test::<COINMAggTrade>(&coinm_symbols(), "csv/coinm/agg_trades/").await;
+#[test]
+fn coinm_agg_trades_test() {
+    trades_test::<COINMAggTrade>(&coinm_symbols(), "csv/coinm/agg_trades/");
 }
 
-#[tokio::test]
-async fn coinm_kline_test() {
-    klines_test::<COINMKline>(&coinm_symbols(), "csv/coinm/klines/").await;
+#[test]
+fn coinm_kline_test() {
+    klines_test::<COINMKline>(&coinm_symbols(), "csv/coinm/klines/");
 }

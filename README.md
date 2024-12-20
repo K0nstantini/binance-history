@@ -33,8 +33,7 @@ binance-history = "0.2.0"
 use binance_history as bh;
 use binance_history::{COINMKline, SpotTrade, USDMAggTrade};
 
-#[tokio::main]
-async fn main() -> bh::Result<()> {
+fn main() -> bh::Result<()> {
     // Path for saving CSV files
     let path = "csv";
 
@@ -43,19 +42,20 @@ async fn main() -> bh::Result<()> {
     let to = "2024-12-01 23:59:59Z".parse().expect("Invalid end date format");
 
     // Fetching spot trades
-    let trades: Vec<SpotTrade> = bh::get_trades("BTCUSDT", from, to, path).await?;
+    let trades: Vec<SpotTrade> = bh::get_trades("BTCUSDT", from, to, path)?;
     println!("First spot trade: {:?}", trades.first());
 
     // Fetching aggregated trades for USD-M futures
-    let agg_trades: Vec<USDMAggTrade> = bh::get_trades("BTCUSDT", from, to, path).await?;
+    let agg_trades: Vec<USDMAggTrade> = bh::get_trades("BTCUSDT", from, to, path)?;
     println!("First aggregated trade: {:?}", agg_trades.first());
 
     // Fetching candlesticks (klines) for COIN-M futures
-    let klines: Vec<COINMKline> = bh::get_klines("BTCUSD_PERP", "1h", from, to, path).await?;
+    let klines: Vec<COINMKline> = bh::get_klines("BTCUSD_PERP", "1h", from, to, path)?;
     println!("First kline: {:?}", klines.first());
 
     Ok(())
 }
+
 ```
 
 ### Using custom struct
@@ -69,9 +69,9 @@ use serde::Deserialize;
 
 // Custom structure for representing price data
 #[derive(Debug, Deserialize)]
+#[allow(dead_code)]
 struct AggregatedPrice {
     time: i64,
-    #[allow(dead_code)]
     price: f64,
 }
 
@@ -85,8 +85,7 @@ impl BinanceData for AggregatedPrice {
     }
 }
 
-#[tokio::main]
-async fn main() -> bh::Result<()> {
+fn main() -> bh::Result<()> {
     // Path for saving CSV files
     let path = "csv";
 
@@ -95,7 +94,7 @@ async fn main() -> bh::Result<()> {
     let to = "2024-12-01 23:59:59Z".parse().expect("Invalid end date format");
 
     // Fetching aggregated trades for USD-M futures
-    let agg_trades: Vec<AggregatedPrice> = bh::get_trades("ETHUSDT", from, to, path).await?;
+    let agg_trades: Vec<AggregatedPrice> = bh::get_trades("ETHUSDT", from, to, path)?;
     println!("First aggregated trade: {:?}", agg_trades.first());
 
     Ok(())

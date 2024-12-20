@@ -6,7 +6,7 @@ use std::path::Path;
 
 /// Fetches trade data for a specified symbol within a given time range.
 ///
-/// This function retrieves historical trade data (e.g., aggregated trades, spot trades) 
+/// This function retrieves historical trade data (e.g., aggregated trades, spot trades)
 /// for the specified symbol and saves the corresponding CSV file in the provided path.
 ///
 /// # Type Parameters
@@ -26,13 +26,13 @@ use std::path::Path;
 /// # Returns
 ///
 /// A vector of parsed trade data of type `T`.
-pub async fn get_trades<T: BinanceData, P: AsRef<Path>>(
+pub fn get_trades<T: BinanceData, P: AsRef<Path>>(
     symbol: &str,
     from: DateTime<Utc>,
     to: DateTime<Utc>,
     path: P,
 ) -> Result<Vec<T>> {
-    get_data::<T, P>(symbol, None, from, to, path).await
+    get_data::<T, P>(symbol, None, from, to, path)
 }
 
 /// Fetches candlestick (kline) data for a specified symbol within a given time range.
@@ -58,17 +58,17 @@ pub async fn get_trades<T: BinanceData, P: AsRef<Path>>(
 /// # Returns
 ///
 /// A vector of parsed kline data of type `T`.
-pub async fn get_klines<T: BinanceData, P: AsRef<Path>>(
+pub fn get_klines<T: BinanceData, P: AsRef<Path>>(
     symbol: &str,
     interval: &str,
     from: DateTime<Utc>,
     to: DateTime<Utc>,
     path: P,
 ) -> Result<Vec<T>> {
-    get_data::<T, P>(symbol, Some(interval), from, to, path).await
+    get_data::<T, P>(symbol, Some(interval), from, to, path)
 }
 
-async fn get_data<T: BinanceData, P: AsRef<Path>>(
+fn get_data<T: BinanceData, P: AsRef<Path>>(
     symbol: &str,
     interval: Option<&str>,
     from: DateTime<Utc>,
@@ -78,11 +78,11 @@ async fn get_data<T: BinanceData, P: AsRef<Path>>(
     util::check_directory_exists(&path)?;
 
     let config = Config::new::<T, P>(symbol, from, to, path, interval)?;
-    load_records_from_csv(&config).await
+    load_records_from_csv(&config)
 }
 
-async fn load_records_from_csv<T: BinanceData>(config: &Config) -> Result<Vec<T>> {
-    let files = download::download_files(config).await?;
+fn load_records_from_csv<T: BinanceData>(config: &Config) -> Result<Vec<T>> {
+    let files = download::download_files(config)?;
     let mut result = Vec::new();
     for file in &files {
         let data = process_file::<T>(file, config)?;

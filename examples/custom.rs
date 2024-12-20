@@ -20,8 +20,7 @@ impl BinanceData for AggregatedPrice {
     }
 }
 
-#[tokio::main]
-async fn main() -> bh::Result<()> {
+fn main() -> bh::Result<()> {
     // Path for saving CSV files
     let path = "csv";
 
@@ -30,7 +29,7 @@ async fn main() -> bh::Result<()> {
     let to = "2024-12-01 23:59:59Z".parse().expect("Invalid end date format");
 
     // Fetching aggregated trades for USD-M futures
-    let agg_trades: Vec<AggregatedPrice> = bh::get_trades("ETHUSDT", from, to, path).await?;
+    let agg_trades: Vec<AggregatedPrice> = bh::get_trades("ETHUSDT", from, to, path)?;
     println!("First aggregated trade: {:?}", agg_trades.first());
 
     Ok(())

@@ -29,20 +29,20 @@ impl FileData {
     }
 }
 
-pub async fn download_files(config: &Config) -> Result<Vec<PathBuf>> {
+pub fn download_files(config: &Config) -> Result<Vec<PathBuf>> {
     let files: Vec<_> = util::get_dates_from_range(config.from, config.to)
         .into_iter()
         .map(|date| FileData::new(config, date))
         .collect::<Result<Vec<_>>>()?;
 
     for file in files.iter().filter(|f| !f.csv.exists()) {
-        download_file(file).await?;
+        download_file(file)?;
     }
     Ok(files.into_iter().map(|f| f.csv).collect())
 }
 
-async fn download_file(file: &FileData) -> Result<()> {
-    download_to_zip(file).await?;
+fn download_file(file: &FileData) -> Result<()> {
+    download_to_zip(file)?;
     if let Err(e) = extract_zip(file) {
         let _ = fs::remove_file(&file.zip);
         return Err(e);
@@ -50,10 +50,10 @@ async fn download_file(file: &FileData) -> Result<()> {
     Ok(())
 }
 
-async fn download_to_zip(file: &FileData) -> Result<()> {
-    let response = reqwest::get(file.url.as_ref()).await?;
+fn download_to_zip(file: &FileData) -> Result<()> {
+    let response = reqwest::blocking::get(file.url.as_ref())?;
     let body = match response.status() {
-        StatusCode::OK => response.bytes().await?,
+        StatusCode::OK => response.bytes()?,
         status => return Err(DownloadError(file.url.to_string(), status.to_string()))
     };
 
