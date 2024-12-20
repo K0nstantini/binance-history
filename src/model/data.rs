@@ -1,14 +1,12 @@
+use super::{DataType, MarketType};
+use crate::util::deserialize_bool;
 use chrono::{
-    DateTime,
     serde::ts_milliseconds,
+    DateTime,
     Utc,
 };
 use rust_decimal::Decimal;
 use serde::{de::DeserializeOwned, Deserialize};
-
-use crate::model::data_type::DataType;
-use crate::model::MarketType;
-use crate::util::deserialize::deserialize_bool;
 
 pub trait BinanceData: DeserializeOwned {
     fn types() -> (MarketType, DataType);
@@ -18,7 +16,7 @@ pub trait BinanceData: DeserializeOwned {
 // ========== SPOT ==============================
 
 #[derive(Clone, Debug, Deserialize)]
-pub struct SpotTrades {
+pub struct SpotTrade {
     #[serde(with = "ts_milliseconds")]
     pub time: DateTime<Utc>,
     pub price: Decimal,
@@ -30,17 +28,8 @@ pub struct SpotTrades {
     pub best_match: bool,
 }
 
-impl BinanceData for SpotTrades {
-    fn types() -> (MarketType, DataType) {
-        (MarketType::SPOT, DataType::Trades)
-    }
-    fn time(&self) -> i64 {
-        self.time.timestamp_millis()
-    }
-}
-
 #[derive(Clone, Debug, Deserialize)]
-pub struct SpotAggTrades {
+pub struct SpotAggTrade {
     #[serde(with = "ts_milliseconds")]
     pub time: DateTime<Utc>,
     pub price: Decimal,
@@ -53,17 +42,8 @@ pub struct SpotAggTrades {
     pub best_match: bool,
 }
 
-impl BinanceData for SpotAggTrades {
-    fn types() -> (MarketType, DataType) {
-        (MarketType::SPOT, DataType::AggTrades)
-    }
-    fn time(&self) -> i64 {
-        self.time.timestamp_millis()
-    }
-}
-
 #[derive(Clone, Debug, Deserialize)]
-pub struct SpotKlines {
+pub struct SpotKline {
     #[serde(with = "ts_milliseconds")]
     pub open_time: DateTime<Utc>,
     pub open: Decimal,
@@ -77,21 +57,12 @@ pub struct SpotKlines {
     pub trades_count: u64,
     pub taker_buy_base_asset_volume: Decimal,
     pub taker_buy_quote_asset_volume: Decimal,
-}
-
-impl BinanceData for SpotKlines {
-    fn types() -> (MarketType, DataType) {
-        (MarketType::SPOT, DataType::Kines)
-    }
-    fn time(&self) -> i64 {
-        self.open_time.timestamp_millis()
-    }
 }
 
 // ========== USDM ==============================
 
 #[derive(Clone, Debug, Deserialize)]
-pub struct USDMTrades {
+pub struct USDMTrade {
     #[serde(with = "ts_milliseconds")]
     pub time: DateTime<Utc>,
     pub price: Decimal,
@@ -101,17 +72,8 @@ pub struct USDMTrades {
     pub buyer_maker: bool,
 }
 
-impl BinanceData for USDMTrades {
-    fn types() -> (MarketType, DataType) {
-        (MarketType::USDM, DataType::Trades)
-    }
-    fn time(&self) -> i64 {
-        self.time.timestamp_millis()
-    }
-}
-
 #[derive(Clone, Debug, Deserialize)]
-pub struct USDMAggTrades {
+pub struct USDMAggTrade {
     #[serde(with = "ts_milliseconds")]
     pub time: DateTime<Utc>,
     pub price: Decimal,
@@ -122,17 +84,8 @@ pub struct USDMAggTrades {
     pub buyer_maker: bool,
 }
 
-impl BinanceData for USDMAggTrades {
-    fn types() -> (MarketType, DataType) {
-        (MarketType::USDM, DataType::AggTrades)
-    }
-    fn time(&self) -> i64 {
-        self.time.timestamp_millis()
-    }
-}
-
 #[derive(Clone, Debug, Deserialize)]
-pub struct USDMKlines {
+pub struct USDMKline {
     #[serde(with = "ts_milliseconds")]
     pub open_time: DateTime<Utc>,
     pub open: Decimal,
@@ -148,19 +101,10 @@ pub struct USDMKlines {
     pub taker_buy_quote_asset_volume: Decimal,
 }
 
-impl BinanceData for USDMKlines {
-    fn types() -> (MarketType, DataType) {
-        (MarketType::USDM, DataType::Kines)
-    }
-    fn time(&self) -> i64 {
-        self.open_time.timestamp_millis()
-    }
-}
-
 // ========== COINM ==============================
 
 #[derive(Clone, Debug, Deserialize)]
-pub struct COINMTrades {
+pub struct COINMTrade {
     #[serde(with = "ts_milliseconds")]
     pub time: DateTime<Utc>,
     pub price: Decimal,
@@ -170,17 +114,8 @@ pub struct COINMTrades {
     pub buyer_maker: bool,
 }
 
-impl BinanceData for COINMTrades {
-    fn types() -> (MarketType, DataType) {
-        (MarketType::COINM, DataType::Trades)
-    }
-    fn time(&self) -> i64 {
-        self.time.timestamp_millis()
-    }
-}
-
 #[derive(Clone, Debug, Deserialize)]
-pub struct COINMAggTrades {
+pub struct COINMAggTrade {
     #[serde(with = "ts_milliseconds")]
     pub time: DateTime<Utc>,
     pub price: Decimal,
@@ -191,17 +126,8 @@ pub struct COINMAggTrades {
     pub buyer_maker: bool,
 }
 
-impl BinanceData for COINMAggTrades {
-    fn types() -> (MarketType, DataType) {
-        (MarketType::COINM, DataType::AggTrades)
-    }
-    fn time(&self) -> i64 {
-        self.time.timestamp_millis()
-    }
-}
-
 #[derive(Clone, Debug, Deserialize)]
-pub struct COINMKlines {
+pub struct COINMKline {
     #[serde(with = "ts_milliseconds")]
     pub open_time: DateTime<Utc>,
     pub open: Decimal,
@@ -217,11 +143,27 @@ pub struct COINMKlines {
     pub taker_buy_base_asset_volume: Decimal,
 }
 
-impl BinanceData for COINMKlines {
-    fn types() -> (MarketType, DataType) {
-        (MarketType::COINM, DataType::Kines)
-    }
-    fn time(&self) -> i64 {
-        self.open_time.timestamp_millis()
-    }
+macro_rules! impl_binance_data {
+    ($struct:ty, $market:expr, $data_type:expr, $time_field:ident) => {
+        impl BinanceData for $struct {
+            fn types() -> (MarketType, DataType) {
+                ($market, $data_type)
+            }
+            fn time(&self) -> i64 {
+                self.$time_field.timestamp_millis()
+            }
+        }
+    };
 }
+
+impl_binance_data!(SpotTrade, MarketType::SPOT, DataType::Trades, time);
+impl_binance_data!(SpotAggTrade, MarketType::SPOT, DataType::AggTrades, time);
+impl_binance_data!(SpotKline, MarketType::SPOT, DataType::Klines, open_time);
+
+impl_binance_data!(USDMTrade, MarketType::USDM, DataType::Trades, time);
+impl_binance_data!(USDMAggTrade, MarketType::USDM, DataType::AggTrades, time);
+impl_binance_data!(USDMKline, MarketType::USDM, DataType::Klines, open_time);
+
+impl_binance_data!(COINMTrade, MarketType::COINM, DataType::Trades, time);
+impl_binance_data!(COINMAggTrade, MarketType::COINM, DataType::AggTrades, time);
+impl_binance_data!(COINMKline, MarketType::COINM, DataType::Klines, open_time);

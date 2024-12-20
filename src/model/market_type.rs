@@ -4,9 +4,9 @@ pub enum MarketType { USDM, COINM, SPOT }
 impl MarketType {
     pub fn path(&self) -> &'static str {
         match self {
-            MarketType::USDM => "futures/um",
-            MarketType::COINM => "futures/cm",
-            MarketType::SPOT => "spot"
+            MarketType::USDM => "futures/um/",
+            MarketType::COINM => "futures/cm/",
+            MarketType::SPOT => "spot/"
         }
     }
 }

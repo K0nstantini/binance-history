@@ -1,11 +1,15 @@
-pub use crate::csv::get;
-pub use crate::model::{data::*, MarketType, DataType};
+extern crate core;
+
+pub use crate::csv::*;
+pub use crate::model::{data::*, DataType, MarketType};
+pub use crate::error::*;
 
 mod download;
 mod csv;
 mod error;
 mod model;
+mod util;
+
 #[cfg(test)]
 mod tests;
-mod util;
 

@@ -7,16 +7,17 @@ license = "MIT OR Apache-2.0"
 repository = "https://github.com/K0nstantini/binance-history"
 readme = "README.md"
 name = "binance-history"
-version = "0.1.0"
+version = "0.2.0"
 edition = "2021"
 
 [dependencies]
-chrono = "0.4.23"
-csv = "1.2.1"
-rust_decimal = "1.28.1"
-reqwest = "0.11.14"
-serde = { version = "1.0.152", features = ["derive"] }
-serde_with = { version = "2.2.0", features = ["chrono"] }
-thiserror = "1.0.39"
-tokio = { version = "1.26.0", features = ["full"] }
-zip = "0.6.4"
+chrono = "0.4.39"
+csv = "1.3.1"
+rust_decimal = "1.36.0"
+reqwest = "0.12.9"
+serde = { version = "1.0.216", features = ["derive"] }
+serde_with = { version = "3.11.0", features = ["chrono"] }
+thiserror = "2.0.8"
+tokio = { version = "1.42.0", features = ["full"] }
+url = "2.5.4"
+zip = "2.2.2"

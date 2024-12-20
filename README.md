@@ -1,61 +1,83 @@
 # Binance history
 
-Downloading and parsing historical data from the Binance exchange
+[![Crates.io](https://img.shields.io/crates/v/binance-history.svg)](https://crates.io/crates/binance-history)
+[![Documentation](https://docs.rs/hashbrown/badge.svg)](https://docs.rs/binance-history)
 
-- [Description](https://github.com/binance/binance-public-data)
+**A Rust library for downloading and parsing historical data from Binance, supporting spot trades, futures, and candlestick data.**
+
+---
+
+## Additional Resources
+
+- [Documentation](https://github.com/binance/binance-public-data)
 - [Binance public data](https://data.binance.vision/)
+
+## Features
+- Download spot trades, futures trades, and candlestick data (klines).
+- Save data locally in CSV format.
+- Define custom data structures for advanced use cases.
 
 ## Installation
 
 Add the following line to your `Cargo.toml` file:
 
 ```
-binance-history = "0.1.0"
-```
-
-Or for the latest github version:
-
-```
-binance-history = { git = "https://github.com/K0nstantini/binance-history" }
+binance-history = "0.2.0"
 ```
 
 ## Usage
 
+### Basic usage
+
 ```rust
-use binance_history::{COINMKlines, SpotTrades, USDMAggTrades};
+use binance_history as bh;
+use binance_history::{COINMKline, SpotTrade, USDMAggTrade};
 
 #[tokio::main]
-async fn main() {
-    let symbol = "BTCUSDT";
+async fn main() -> bh::Result<()> {
+    // Path for saving CSV files
     let path = "csv";
-    let from = "2023-02-01 00:00:00";
-    let to = "2023-02-02 23:59:59";
 
-    let spot_trades: Vec<SpotTrades> = binance_history::get(symbol, None, from, to, path).await.unwrap();
-    let usdm_agg_trades: Vec<USDMAggTrades> = binance_history::get(symbol, None, from, to, path).await.unwrap();
-    let coinm_klines: Vec<COINMKlines> = binance_history::get("BTCUSD_PERP", Some("1h"), from, to, path).await.unwrap();
+    // Time range for fetching data
+    let from = "2024-12-01 00:00:00Z".parse().expect("Invalid start date format");
+    let to = "2024-12-01 23:59:59Z".parse().expect("Invalid end date format");
 
-    assert!(!spot_trades.is_empty());
-    assert!(!usdm_agg_trades.is_empty());
-    assert!(!coinm_klines.is_empty());
+    // Fetching spot trades
+    let trades: Vec<SpotTrade> = bh::get_trades("BTCUSDT", from, to, path).await?;
+    println!("First spot trade: {:?}", trades.first());
+
+    // Fetching aggregated trades for USD-M futures
+    let agg_trades: Vec<USDMAggTrade> = bh::get_trades("BTCUSDT", from, to, path).await?;
+    println!("First aggregated trade: {:?}", agg_trades.first());
+
+    // Fetching candlesticks (klines) for COIN-M futures
+    let klines: Vec<COINMKline> = bh::get_klines("BTCUSD_PERP", "1h", from, to, path).await?;
+    println!("First kline: {:?}", klines.first());
+
+    Ok(())
 }
 ```
 
 ### Using custom struct
 
+You can define a custom structure to parse data specific to your application's requirements.
+
 ```rust
+use binance_history as bh;
 use binance_history::{BinanceData, DataType, MarketType};
 use serde::Deserialize;
 
-#[derive(Deserialize)]
-struct Prices {
+// Custom structure for representing price data
+#[derive(Debug, Deserialize)]
+struct AggregatedPrice {
     time: i64,
+    #[allow(dead_code)]
     price: f64,
 }
 
-impl BinanceData for Prices {
+impl BinanceData for AggregatedPrice {
     fn types() -> (MarketType, DataType) {
-        (MarketType::USDM, DataType::Trades)
+        (MarketType::USDM, DataType::AggTrades)
     }
 
     fn time(&self) -> i64 {
@@ -64,13 +86,22 @@ impl BinanceData for Prices {
 }
 
 #[tokio::main]
-async fn main() {
-    let symbol = "ETHUSDT";
+async fn main() -> bh::Result<()> {
+    // Path for saving CSV files
     let path = "csv";
-    let from = "2023-02-01 00:00:00";
-    let to = "2023-02-02 23:59:59";
 
-    let prices: Vec<Prices> = binance_history::get(symbol, None, from, to, path).await.unwrap();
-    assert!(!prices.is_empty());
+    // Time range for fetching data
+    let from = "2024-12-01 00:00:00Z".parse().expect("Invalid start date format");
+    let to = "2024-12-01 23:59:59Z".parse().expect("Invalid end date format");
+
+    // Fetching aggregated trades for USD-M futures
+    let agg_trades: Vec<AggregatedPrice> = bh::get_trades("ETHUSDT", from, to, path).await?;
+    println!("First aggregated trade: {:?}", agg_trades.first());
+
+    Ok(())
 }
 ```
+
+## License
+
+This project is dual-licensed under MIT and Apache 2.0.

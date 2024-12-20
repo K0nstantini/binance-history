@@ -6,10 +6,13 @@ pub type Result<T> = std::result::Result<T, Error>;
 pub enum Error {
 
     #[error("The directory '{0}' does not exist")]
-    DirectoryExistence(String),
+    DirectoryNotFound(String),
 
     #[error(transparent)]
     Reqwest(#[from] reqwest::Error),
+
+    #[error(transparent)]
+    InvalidUrl(#[from] url::ParseError),
 
     #[error(transparent)]
     Io(#[from] std::io::Error),
@@ -17,15 +20,15 @@ pub enum Error {
     #[error(transparent)]
     Zip(#[from] zip::result::ZipError),
 
+    #[error("The archive '{0}' is empty and cannot be extracted")]
+    EmptyArchiveError(String),
+
     #[error(transparent)]
     Csv(#[from] csv::Error),
 
-    #[error("Invalid date format")]
-    InvalidDateFormat,
+    #[error("Failed to download the file from '{0}'. HTTP status code: {1}")]
+    DownloadError(String, String),
 
-    #[error("Error while downloading file: {0}. Status code: {1}")]
-    Download(String, String),
-
-    #[error("Missed kline's interval")]
-    MissedKlinesInterval,
+    #[error("The kline's interval is missing")]
+    MissingKlinesInterval,
 }
